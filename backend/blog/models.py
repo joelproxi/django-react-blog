@@ -9,18 +9,35 @@ class Category(models.Model):
 
     class Meta:
         ordering = ('-name',)
-
+        indexes = [
+            models.Index(
+                fields=['slug']
+            )
+        ]
 
 
 class CreationModificationMixin(models.Model):
-    cretead = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
+        ordering = ('-created',)
+        indexes = [
+            models.Index(
+                fields=['-created']
+            )
+        ]
 
 
-class Post(CreationModificationMixin):
+class TimestempContentMixin(CreationModificationMixin):
+    content = models.TextField()
+
+    class Meta(CreationModificationMixin.Meta):
+        pass
+
+
+class Post(TimestempContentMixin):
     DRAFT = 'D'
     PUBLISHED = 'P'
     POST_STATUS = (
@@ -28,7 +45,6 @@ class Post(CreationModificationMixin):
         (PUBLISHED, 'Published')
     )
     title = models.CharField(max_length=200)
-    content = models.TextField()
     image = models.ImageField(upload_to='images/post/')
     category = models.ForeignKey(Category,
                                  on_delete=models.CASCADE,
@@ -44,18 +60,17 @@ class Post(CreationModificationMixin):
        related_name='posted'
     )
 
-    class Meta:
-        ordering = ('-created',)
+    def __str__(self):
+        return self.title
 
 
-class comment(CreationModificationMixin):
+class comment(TimestempContentMixin):
     post = models.ForeignKey(Post,
                              on_delete=models.CASCADE,
                              related_name='posts')
     author = models.ForeignKey(UserModel,
                                on_delete=models.CASCADE,
                                related_name='commented')
-    content = models.TextField()
 
-    class Meta:
-        ordering = ('-created',)
+    def __str__(self):
+        return self.content[:30]

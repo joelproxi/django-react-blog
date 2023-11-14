@@ -11,7 +11,16 @@ class Category(models.Model):
         ordering = ('-name',)
 
 
-class Post(models.Model):
+
+class CreationModificationMixin(models.Model):
+    cretead = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Post(CreationModificationMixin):
     DRAFT = 'D'
     PUBLISHED = 'P'
     POST_STATUS = (
@@ -34,14 +43,12 @@ class Post(models.Model):
        on_delete=models.CASCADE,
        related_name='posted'
     )
-    cretead = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ('-created',)
 
 
-class comment(models.Model):
+class comment(CreationModificationMixin):
     post = models.ForeignKey(Post,
                              on_delete=models.CASCADE,
                              related_name='posts')
@@ -49,8 +56,6 @@ class comment(models.Model):
                                on_delete=models.CASCADE,
                                related_name='commented')
     content = models.TextField()
-    cretead = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ('-created',)

@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class UserModel(AbstractUser):
-    username = models.CharField(max_length=255)
+    username = models.CharField(max_length=25, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
@@ -16,4 +16,4 @@ class UserModel(AbstractUser):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['last_name', 'first_name']
-
+    

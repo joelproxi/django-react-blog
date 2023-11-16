@@ -16,28 +16,23 @@ class Category(models.Model):
         ]
 
 
-class CreationModificationMixin(models.Model):
+class TimestempMixin(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
         ordering = ('-created',)
-        indexes = [
-            models.Index(
-                fields=['-created']
-            )
-        ]
 
 
-class TimestempContentMixin(CreationModificationMixin):
+class ContentMixin(models.Model):
     content = models.TextField()
 
-    class Meta(CreationModificationMixin.Meta):
-        pass
+    class Meta:
+        abstract = True
 
 
-class Post(TimestempContentMixin):
+class Post(TimestempMixin, ContentMixin):
     DRAFT = 'D'
     PUBLISHED = 'P'
     POST_STATUS = (
@@ -64,7 +59,7 @@ class Post(TimestempContentMixin):
         return self.title
 
 
-class comment(TimestempContentMixin):
+class Comment(TimestempMixin, ContentMixin):
     post = models.ForeignKey(Post,
                              on_delete=models.CASCADE,
                              related_name='posts')

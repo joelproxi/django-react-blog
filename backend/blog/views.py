@@ -8,7 +8,7 @@ from blog.serializers import PostSerializer, CommentSerializer
 
 
 class PostViewset(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     serializer_class = PostSerializer
 
     def get_queryset(self):
@@ -21,3 +21,6 @@ class PostViewset(viewsets.ModelViewSet):
 class CommentViewset(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
